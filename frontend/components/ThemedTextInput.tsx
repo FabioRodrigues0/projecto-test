@@ -15,15 +15,19 @@ export type ThemedTextInputProps = TextInputProps & {
   name: string;
   lightColor?: string;
   darkColor?: string;
-  placeholder?: string;
+  placeholderProp?: string | number;
   type?: KeyboardType;
-  onChangeProp?: ((text: string) => void) | undefined;
-  valueProp?: string | undefined;
+  onChangeProp?: ((text: string | number) => void) | undefined;
+  valueProp?: string | number | undefined;
   secure?: boolean;
   rightIcon?: string;
   handlePasswordVisibility?: () => void;
 };
-
+/**
+ * Input de texto com tema adaptável, original que vem com a inicializaçao do projecto,
+ * mas foi alterado para puder ser mais facil a utilização para password text input.
+ *
+ */
 export function ThemedTextInput({
   name,
   style,
@@ -31,7 +35,7 @@ export function ThemedTextInput({
   darkColor,
   type = "default",
   secure = false,
-  placeholder,
+  placeholderProp,
   onChangeProp,
   valueProp,
   rightIcon,
@@ -47,7 +51,7 @@ export function ThemedTextInput({
           <TextInput
             name={name}
             style={styles.inputField}
-            placeholder={placeholder}
+            placeholder={placeholderProp}
             autoCapitalize="none"
             autoCorrect={false}
             textContentType="password"

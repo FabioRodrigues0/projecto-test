@@ -1,13 +1,12 @@
-import React from "react";
 import {
-  NavigationContainer,
   DarkTheme,
   DefaultTheme,
+  ThemeProvider,
 } from "@react-navigation/native";
-import { ThemeProvider } from "@react-navigation/native";
-import { useColorScheme } from "../hooks/useColorScheme";
-import { AuthProvider } from "../components/AuthContext";
 import { Stack } from "expo-router";
+import React from "react";
+import { AuthProvider } from "../components/AuthContext";
+import { useColorScheme } from "../hooks/useColorScheme";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();

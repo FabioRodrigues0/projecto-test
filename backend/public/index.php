@@ -5,6 +5,7 @@ require __DIR__ . "/../vendor/autoload.php";
 
 use Slim\Factory\AppFactory;
 use Slim\Psr7\Factory\ServerRequestFactory;
+use Dotenv\Parser\Value;
 
 $app = AppFactory::create();
 $app->addRoutingMiddleware();
@@ -49,16 +50,16 @@ $app->post("/api/login", function ($request, $response) {
             ->withStatus(400);
     }
 
-    // Buscar o usuário no banco de dados
+    // Select do user na base de dados
     $stmt = $conn->prepare(
-        "SELECT id, name, password, is_verify FROM clients WHERE email = :email"
+        "SELECT id, name, password, email, is_verify FROM clients WHERE email = :email"
     );
     $stmt->execute(["email" => $email]);
     $user = $stmt->fetch();
 
-    // Verificar se a senha está correta
+    // Verificar se a password está correta
     if ($user && password_verify($password, $user["password"])) {
-        // Remover a senha do retorno por segurança
+        // Remover a password do retorno por segurança
         unset($user["password"]);
 
         $response->getBody()->write(
@@ -80,46 +81,7 @@ $app->post("/api/login", function ($request, $response) {
     }
 });
 
-$app->post("/api/registro", function ($request, $response) {
-    $db = new Database();
-    $conn = $db->getConnection();
-
-    $data = json_decode($request->getBody()->getContents(), true);
-
-    if (!isset($data["email"]) || !isset($data["password"])) {
-        $response
-            ->getBody()
-            ->write(json_encode(["error" => "Email e senha são obrigatórios"]));
-        return $response
-            ->withHeader("Content-Type", "application/json")
-            ->withStatus(400);
-    }
-
-    $email = $data["email"];
-    $password = password_hash($data["password"], PASSWORD_DEFAULT);
-
-    // Gerar o nome a partir do email
-    $nomeOriginal = explode("@", $email)[0];
-    $nomeFormatado = str_replace([".", "_", "-"], " ", $nomeOriginal);
-    $name = ucwords($nomeFormatado);
-
-    $stmt = $conn->prepare(
-        "INSERT INTO clients (name, email, password) VALUES (:name, :email, :password)"
-    );
-    $stmt->execute([
-        "name" => $name,
-        "email" => $email,
-        "password" => $password,
-    ]);
-
-    $response
-        ->getBody()
-        ->write(json_encode(["message" => "Usuário cadastrado com sucesso!"]));
-    return $response
-        ->withHeader("Content-Type", "application/json")
-        ->withStatus(201);
-});
-
+// Rota listar produtos do cliente
 $app->get("/api/client/products", function ($request, $response) {
     $db = new Database();
     $conn = $db->getConnection();
@@ -166,11 +128,94 @@ $app->get("/api/client/products", function ($request, $response) {
         ->withStatus(404);
 });
 
-// Rota para testar se api esta a funcionar
-$app->get("/api/test", function ($request, $response) {
-    $data = ["message" => "API Online!"];
-    $response->getBody()->write(json_encode($data));
-    return $response->withHeader("Content-Type", "application/json");
+// Rota para dar update ao user
+$app->put("/api/user", function ($request, $response) {
+    $db = new Database();
+    $conn = $db->getConnection();
+
+    // pegar no id que foi passado na query string
+    $data = json_decode($request->getBody()->getContents(), true);
+    $id = $data["id"] ?? "";
+
+    // Verificar se os campos estão preenchidos
+    if (empty($id) || empty($data["name"]) || empty($data["email"])) {
+        $response
+            ->getBody()
+            ->write(json_encode(["error" => "Campos obrigatórios"]));
+        return $response
+            ->withHeader("Content-Type", "application/json")
+            ->withStatus(400);
+    }
+
+    // Atualizar o user no banco de dados
+    $stmt = $conn->prepare(
+        "UPDATE clients SET name = :name, email = :email, is_verify = :is_verify WHERE id = :id"
+    );
+    $stmt->execute([
+        "id" => $id,
+        "name" => $data["name"],
+        "email" => $data["email"],
+        "is_verify" => $data["is_verify"],
+    ]);
+
+    $response
+        ->getBody()
+        ->write(json_encode(["message" => "Usuário atualizado com sucesso"]));
+    return $response
+        ->withHeader("Content-Type", "application/json")
+        ->withStatus(200);
+});
+
+// Alterar o campo is_verify do user
+$app->patch("/api/user/verify", function ($request, $response) {
+    $db = new Database();
+    $conn = $db->getConnection();
+
+    $data = json_decode($request->getBody()->getContents(), true);
+    $id = $data["id"] ?? "";
+
+    if (empty($id)) {
+        $response
+            ->getBody()
+            ->write(json_encode(["error" => "Id do cliente é obrigatórios"]));
+        return $response
+            ->withHeader("Content-Type", "application/json")
+            ->withStatus(400);
+    }
+
+    $stmt = $conn->prepare("UPDATE clients SET is_verify = 1 WHERE id = :id");
+    $stmt->execute([
+        "id" => $id,
+        "is_verify" => $data["is_verify"],
+    ]);
+
+    $response
+        ->getBody()
+        ->write(json_encode(["message" => "Usuário atualizado com sucesso"]));
+    return $response
+        ->withHeader("Content-Type", "application/json")
+        ->withStatus(200);
+});
+
+// pedir para ser verificado
+$app->post("/api/get-verify", function ($request, $response) {
+    $data = json_decode($request->getBody()->getContents(), true);
+    $number = $data["number"] ?? "";
+
+    $apiKey = $_ENV["WHAPI_TOKEN "];
+    $whatsapp = new WhatsAppAPI($apiKey);
+
+    $codigo = rand(100000, 999999); // Gera um código aleatório
+
+    $mensagem = "Seu código de verificação é: *$codigo*";
+
+    $response = $whatsapp->sendMessage($number, $mensagem);
+
+    if ($response->status === "success") {
+        echo "Código enviado com sucesso!";
+    } else {
+        echo "Erro ao enviar: " . $response->message;
+    }
 });
 
 // Inicia o servidor Slim

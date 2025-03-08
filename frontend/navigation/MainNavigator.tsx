@@ -6,7 +6,10 @@ import LoginScreen from "../app/login";
 import TabNavigator from "./TabNavigator";
 
 const Stack = createNativeStackNavigator<StackParamList>();
-
+/**
+ * Navegador principal da aplicação, entre paginas.
+ *
+ */
 const MainNavigator: React.FC = () => {
   const { user } = useAuth();
 

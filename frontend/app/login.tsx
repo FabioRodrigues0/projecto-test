@@ -1,16 +1,14 @@
 import React from "react";
-import { Image, StyleSheet, Button, View, Alert } from "react-native";
+import { Alert, Button, Image, StyleSheet, View } from "react-native";
 
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedTextInput } from "@/components/ThemedTextInput";
 import { ThemedView } from "@/components/ThemedView";
-import { useAuth } from "../components/AuthContext";
 import { router } from "expo-router";
-
+import { useAuth } from "../components/AuthContext";
+import { Storage } from "../hooks/storage";
 import { useTogglePasswordVisibility } from "../hooks/useTogglePasswordVisibility";
-import { Redirect } from "expo-router";
-
 export default function LoginScreen() {
   const [email, onChangeInputEmail] = React.useState("");
   const [password, onChangeInputPassword] = React.useState("");
@@ -29,29 +27,12 @@ export default function LoginScreen() {
       const data = await response.json();
 
       if (response.ok) {
+        // Armazenar token se existir
+        Storage.setItem("authToken", "o_token_do_user");
+
+        // Login
         login(data.user);
         router.replace("/(tabs)/dashboard");
-      } else {
-        Alert.alert("Erro", data.error);
-      }
-    } catch (error) {
-      Alert.alert("Erro", "Falha ao conectar ao servidor.");
-      console.error(error);
-    }
-  };
-
-  const handleRegiste = async () => {
-    try {
-      const response = await fetch("http://localhost:8000/api/registro", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        Alert.alert("Sucesso", `Bem-vindo, ${data.user.nome}!`);
       } else {
         Alert.alert("Erro", data.error);
       }
@@ -78,7 +59,7 @@ export default function LoginScreen() {
         <ThemedTextInput
           name="email"
           type="email-address"
-          placeholder="Insira o Email"
+          placeholderProp="Insira o Email"
           textContentType="emailAddress"
           value={email}
           onChangeProp={(text) => onChangeInputEmail(text)}
@@ -87,7 +68,7 @@ export default function LoginScreen() {
           name="password"
           secure={passwordVisibility}
           type="default"
-          placeholder="Insira a Password"
+          placeholderProp="Insira a Password"
           textContentType="password"
           secureTextEntry={true}
           value={password}

@@ -8,7 +8,7 @@ Avaliar as tuas competências em desenvolvimento de software, incluindo a criaç
 
 ### 1. Base de Dados (MySQL/MariaDB)
 
-- [ ] **Design da Base de Dados**
+- [x] **Design da Base de Dados**
   - [x] Criar tabelas para **Clientes**, **Produtos** e **Subscrições**.
   - [x] Definir campos relevantes para cada tabela com base nos requisitos funcionais e de negócios.
 
@@ -23,7 +23,7 @@ Avaliar as tuas competências em desenvolvimento de software, incluindo a criaç
 
 ### 4. Edição de Detalhes do Usuário (React Native)
 
-- [ ] Implementar funcionalidade para **editar detalhes do usuário** através de um formulário de edição.
+- [x] Implementar funcionalidade para **editar detalhes do usuário** através de um formulário de edição.
 
 ### 5. Integração com API do Whapi (PHP)
 
@@ -38,14 +38,14 @@ Avaliar as tuas competências em desenvolvimento de software, incluindo a criaç
 
 ## Requisitos Adicionais
 
-- [ ] **Comentários no Código**
+- [x] **Comentários no Código**
   - Todo o código deve ser bem comentado e justificado para facilitar a compreensão da lógica implementada.
-- [ ] **Repositório GitHub**
+- [x] **Repositório GitHub**
   - Criar um repositório no **GitHub** e fornecer o link de acesso para avaliação do projeto.
 
 ## Instruções de Submissão
 
-- [ ] Fornecer o link do **repositório GitHub** com todo o código fonte.
-- [ ] O repositório deve incluir um **README.md** com:
-  - [ ] Instruções sobre **como configurar e executar o projeto**.
-  - [ ] Configuração da **base de dados** e qualquer configuração específica necessária para o ambiente.
+- [x] Fornecer o link do **repositório GitHub** com todo o código fonte.
+- [x] O repositório deve incluir um **README.md** com:
+  - [x] Instruções sobre **como configurar e executar o projeto**.
+  - [x] Configuração da **base de dados** e qualquer configuração específica necessária para o ambiente.
