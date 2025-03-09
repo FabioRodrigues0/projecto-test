@@ -4,10 +4,15 @@
     "slim/slim": "^4",
     "nyholm/psr7": "^1.8",
     "slim/psr7": "^1.7",
-    "whapi-cloud/whatsapp-api-sdk-php": "*"
+    "whapi-cloud/whatsapp-api-sdk-php": "dev-master"
   },
   "config": {
     "minimum-stability": "dev",
     "prefer-stable": true
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
   }
 }
