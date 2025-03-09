@@ -39,7 +39,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       try {
         const storedUserData = Storage.getItem("userData");
         if (storedUserData) {
-          storedUserData.then((data) => setUser(JSON.parse(data ?? "")));
+          storedUserData.then((data) => {
+            if (data != null) {
+              setUser(JSON.parse(data ?? ""));
+            }
+          });
         }
       } catch (error) {
         console.error("Erro ao carregar usuário:", error);
