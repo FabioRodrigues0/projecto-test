@@ -1,9 +1,13 @@
 import ParallaxScrollView from "@/components/ParallaxScrollView";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
+  Button,
+  Platform,
+  Modal,
   Alert,
   FlatList,
   Image,
@@ -11,6 +15,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Pressable,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../components/AuthContext";
@@ -29,30 +34,37 @@ interface Products {
 const imageMapping = getImageMapping();
 
 interface ItemProps {
-  image: string;
-  title: string;
+  item: Products;
 }
-
-const ItemComponent: React.FC<ItemProps> = ({ image, title }) => {
-  console.log(imageMapping[image]);
-  return (
-    <View style={styles.item}>
-      <Image
-        style={styles.stretch}
-        source={
-          image in imageMapping
-            ? imageMapping[image]
-            : require("@images/defaultImage.webp")
-        }
-      />
-      <Text style={styles.title}>{title}</Text>
-    </View>
-  );
-};
 
 export default function DashboardScreen() {
   const [products, setProducts] = useState<Array<Products> | null>([]);
   const { user } = useAuth();
+  const [modalDetailsVisible, setModalDetailsVisible] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Products | null>(null);
+
+  const ItemComponent: React.FC<ItemProps> = ({ item }) => {
+    return (
+      <Pressable
+        onPress={() => {
+          setSelectedProduct(item);
+          setModalDetailsVisible(true);
+        }}
+      >
+        <View style={styles.item}>
+          <Image
+            style={styles.stretch}
+            source={
+              item.image_url in imageMapping
+                ? imageMapping[item.image_url]
+                : require("@images/defaultImage.webp")
+            }
+          />
+          <Text style={styles.title}>{item.name}</Text>
+        </View>
+      </Pressable>
+    );
+  };
 
   const getProducts = async (id: number) => {
     try {
@@ -97,14 +109,46 @@ export default function DashboardScreen() {
         />
       }
     >
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalDetailsVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalDetailsVisible(!modalDetailsVisible);
+        }}
+      >
+        <ThemedView style={styles.centeredView}>
+          <ThemedView style={styles.modalView}>
+            <Image
+              style={styles.stretch}
+              source={
+                selectedProduct?.image_url || "" in imageMapping
+                  ? imageMapping[selectedProduct?.image_url || ""]
+                  : require("@images/defaultImage.webp")
+              }
+            />
+            <ThemedText style={styles.modalText}>
+              {selectedProduct?.name || ""}
+            </ThemedText>
+            <ThemedText style={styles.modalText}>
+              {selectedProduct?.description || ""}
+            </ThemedText>
+            <Button
+              title="Fechar"
+              onPress={() => {
+                setModalDetailsVisible(!modalDetailsVisible);
+              }}
+            />
+          </ThemedView>
+        </ThemedView>
+      </Modal>
       <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
           <FlatList
             numColumns={3}
             data={products}
-            renderItem={({ item }) => (
-              <ItemComponent title={item.name} image={item.image_url} />
-            )}
+            renderItem={({ item }) => <ItemComponent item={item} />}
             keyExtractor={(products) => products.id}
           />
         </SafeAreaView>
@@ -114,6 +158,31 @@ export default function DashboardScreen() {
 }
 
 const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+    color: "#333",
+  },
   headerImage: {
     color: "#808080",
     bottom: -90,
