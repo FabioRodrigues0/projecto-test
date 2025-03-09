@@ -15,8 +15,8 @@ export default function ProfileScreen() {
   const [name, onChangeInputName] = React.useState(user?.name);
   const [is_verify] = React.useState(user?.is_verify);
   const [clientNumber, setClientNumber] = React.useState(0);
+  const [codigoVerificacao, setCodigoVerificacao] = React.useState(0);
   const [modalVerifyVisible, setModalVerifyVisible] = React.useState(false);
-  const [modalDetailsVisible, setModalDetailsVisible] = React.useState(false);
 
   // logout
   const handleLogout = () => {
@@ -37,16 +37,20 @@ export default function ProfileScreen() {
   const updateVerify = async () => {
     try {
       const response = await fetch("http://localhost:8000/api/user/verify", {
-        method: "PUT",
+        method: "post",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id, codigoVerificacao }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
+        console.log("Perfil atualizado com sucesso.");
+        console.log(response);
+        setModalVerifyVisible(false);
         Alert.alert("Sucesso", "Perfil atualizado com sucesso.");
       } else {
+        console.log(data.error);
         Alert.alert("Erro", data.error);
       }
     } catch (error) {
@@ -116,11 +120,27 @@ export default function ProfileScreen() {
               />
               <Pressable
                 style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVerifyVisible(!modalVerifyVisible)}
+                onPress={verificarUser}
               >
                 <ThemedText style={styles.textStyle}>
-                  Enviar Verificação
+                  Pedir Codigo de Verificação
                 </ThemedText>
+              </Pressable>
+              <ThemedTextInput
+                dataDetectorTypes={"phoneNumber"}
+                inputMode="tel"
+                name="number"
+                type="phone-pad"
+                placeholderProp={codigoVerificacao}
+                textContentType="telephoneNumber"
+                valueProp={codigoVerificacao}
+                onChangeProp={(text) => setCodigoVerificacao(text)}
+              />
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={updateVerify}
+              >
+                <ThemedText style={styles.textStyle}>Verificar</ThemedText>
               </Pressable>
             </ThemedView>
           </ThemedView>
