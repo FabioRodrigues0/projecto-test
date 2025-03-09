@@ -5,10 +5,11 @@ echo Detectando sistema operacional...
 ver | find "Windows" > nul
 if %ERRORLEVEL% == 0 (
     echo Sistema detectado: Windows
-    powershell -ExecutionPolicy Bypass -File server.ps1
-    exit
+    powershell -ExecutionPolicy Bypass -File run_servers.ps1
+    exit /b
 )
 
 :: Caso contrário, assume que é Linux/macOS/WSL
 echo Sistema detectado: Linux/macOS
-bash server.sh
+bash run_servers.sh
+exit /b

@@ -29,12 +29,12 @@ Avaliar as tuas competências em desenvolvimento de software, incluindo a criaç
 
 #### Instalação e Configuração:
 - [ ] Instalar o pacote do Whapi via Composer utilizando o repositório: [https://github.com/Whapi-Cloud/whatsapp-api-sdk-php](https://github.com/Whapi-Cloud/whatsapp-api-sdk-php)
-- [ ] Usar as seguintes chaves de API para autenticação:
+- [x] Usar as seguintes chaves de API para autenticação:
   - `bearerAuth: 4EZ7XWCd2QTP2PmL6wC3oZr2tuFH8jzt`
 
 #### Criar função no back-end PHP para:
-- [ ] Enviar um **código de verificação** para o telefone do cliente.
-- [ ] Usar o código para **confirmação da conta** ou **autenticação em dois fatores**.
+- [x] Enviar um **código de verificação** para o telefone do cliente.
+- [x] Usar o código para **confirmação da conta** ou **autenticação em dois fatores**.
 
 ## Requisitos Adicionais
 
