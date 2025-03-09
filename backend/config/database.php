@@ -35,4 +35,13 @@ class Database
     {
         return $this->pdo;
     }
+
+    public function dbcache()
+    {
+        $db = new SQLite3("database.sqlite");
+        $db->exec(
+            "CREATE TABLE IF NOT EXISTS verification_codes (number TEXT PRIMARY KEY, code TEXT NOT NULL, timestamp INTEGER NOT NULL)"
+        );
+        return $db;
+    }
 }
